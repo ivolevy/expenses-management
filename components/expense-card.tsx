@@ -1,0 +1,130 @@
+"use client"
+
+import { useState } from "react"
+import { Card, CardContent } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { type Expense, getCategoryIcon, getCategoryLabel, getUserColor } from "@/lib/data"
+import { Edit, Trash2, FileText } from "lucide-react"
+import { formatCurrency, formatDate } from "@/lib/utils"
+import { deleteExpense } from "@/lib/actions"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import { Badge } from "@/components/ui/badge"
+import { useToast } from "@/hooks/use-toast"
+
+interface ExpenseCardProps {
+  expense: Expense
+  onEdit: () => void
+  onDeleted: (id: string) => void
+}
+
+export function ExpenseCard({ expense, onEdit, onDeleted }: ExpenseCardProps) {
+  const [isDeleting, setIsDeleting] = useState(false)
+  const { toast } = useToast()
+
+  const CategoryIcon = getCategoryIcon(expense.category)
+  const userColor = getUserColor(expense.user_id)
+
+  const handleDelete = async () => {
+    setIsDeleting(true)
+    try {
+      await deleteExpense(expense.id)
+      onDeleted(expense.id)
+      toast({
+        title: "Gasto eliminado",
+        description: "El gasto ha sido eliminado correctamente",
+        variant: "default",
+      })
+    } catch (error) {
+      console.error("Error al eliminar el gasto:", error)
+      toast({
+        title: "Error",
+        description: "No se pudo eliminar el gasto",
+        variant: "destructive",
+      })
+    } finally {
+      setIsDeleting(false)
+    }
+  }
+
+  return (
+    <Card className="overflow-hidden">
+      <CardContent className="p-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className={`flex items-center justify-center w-10 h-10 rounded-full ${userColor}`}>
+              <span className="font-bold text-white">U{expense.user_id}</span>
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <CategoryIcon className="h-4 w-4 text-muted-foreground" />
+                <span className="font-medium">{getCategoryLabel(expense.category)}</span>
+              </div>
+              <div className="text-sm text-muted-foreground">{formatDate(new Date(expense.created_at))}</div>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <div className="text-right mr-2">
+              <div className="font-bold">{formatCurrency(expense.amount)}</div>
+              {expense.receipt_url && (
+                <Badge variant="outline" className="gap-1">
+                  <FileText className="h-3 w-3" />
+                  <span className="text-xs">Comprobante</span>
+                </Badge>
+              )}
+            </div>
+
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8"
+              onClick={onEdit}
+            >
+              <Edit className="h-4 w-4" />
+            </Button>
+
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 text-destructive hover:text-destructive"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Esta acción no se puede deshacer. Se eliminará permanentemente este gasto.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={handleDelete}
+                    disabled={isDeleting}
+                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                  >
+                    {isDeleting ? "Eliminando..." : "Eliminar"}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
