@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { type Expense, getCategoryIcon, getCategoryLabel, getUserColor } from "@/lib/data"
+import { type Expense, getCategoryIcon, getCategoryLabel, getUserColor, getUserName } from "@/lib/data"
 import { Edit, Trash2, FileText } from "lucide-react"
 import { formatCurrency, formatDate } from "@/lib/utils"
 import { deleteExpense } from "@/lib/actions"
@@ -62,7 +62,7 @@ export function ExpenseCard({ expense, onEdit, onDeleted }: ExpenseCardProps) {
         <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:justify-between">
           <div className="flex items-center gap-3">
             <div className={`flex items-center justify-center w-10 h-10 rounded-full ${userColor}`}>
-              <span className="font-bold text-white">U{expense.user_id}</span>
+              <span className="font-bold text-white">{getUserName(expense.user_id).charAt(0)}</span>
             </div>
             <div className="flex-grow">
               <div className="flex items-center gap-2">

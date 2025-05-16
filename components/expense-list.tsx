@@ -5,8 +5,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { ExpenseCard } from "@/components/expense-card"
 import { getExpenses } from "@/lib/actions"
 import type { Expense } from "@/lib/data"
+import { getUserName } from "@/lib/data"
 import { Input } from "@/components/ui/input"
 import { Search } from "lucide-react"
+import { ExportExpenses } from "@/components/export-expenses"
 
 interface ExpenseListProps {
   onEditExpense: (expense: Expense) => void
@@ -60,7 +62,7 @@ export function ExpenseList({ onEditExpense }: ExpenseListProps) {
     
     try {
       const categoryMatch = expense.category.toLowerCase().includes(searchTerm.toLowerCase())
-      const userMatch = `Usuario ${expense.user_id}`.toLowerCase().includes(searchTerm.toLowerCase())
+      const userMatch = getUserName(expense.user_id).toLowerCase().includes(searchTerm.toLowerCase())
       const amountMatch = expense.amount.toString().includes(searchTerm)
 
       return categoryMatch || userMatch || amountMatch
@@ -88,14 +90,17 @@ export function ExpenseList({ onEditExpense }: ExpenseListProps) {
               {Array.isArray(expenses) ? `${expenses.length} gastos registrados` : "Cargando gastos..."}
             </CardDescription>
           </div>
-          <div className="relative w-full md:w-64">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Buscar gastos..."
-              className="pl-8"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
+          <div className="flex items-center gap-2">
+            <div className="relative w-full md:w-64">
+              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Buscar gastos..."
+                className="pl-8"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+            <ExportExpenses expenses={filteredExpenses} />
           </div>
         </div>
       </CardHeader>

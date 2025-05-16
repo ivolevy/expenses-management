@@ -49,12 +49,26 @@ export function getCategoryLabel(category: string): string {
 export function getUserColor(userId: string): string {
   switch (userId) {
     case "1":
-      return "bg-blue-600" // Azul principal
+      return "bg-emerald-600" // Verde esmeralda
     case "2":
-      return "bg-indigo-600" // Índigo
+      return "bg-amber-600" // Ámbar
     case "3":
-      return "bg-violet-600" // Violeta
+      return "bg-rose-600" // Rosa
     default:
       return "bg-purple-600" // Púrpura
+  }
+}
+
+// Función para obtener el nombre personalizado de un usuario
+export function getUserName(userId: string): string {
+  switch (userId) {
+    case "1":
+      return "Juan"
+    case "2":
+      return "María"
+    case "3":
+      return "Carlos"
+    default:
+      return `Usuario ${userId}`
   }
 }

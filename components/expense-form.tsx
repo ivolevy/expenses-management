@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { X, Upload, AlertCircle, InfoIcon } from "lucide-react"
 import { addExpense, updateExpense } from "@/lib/actions"
 import type { ExpenseCategory } from "@/lib/data"
+import { getUserName } from "@/lib/data"
 import { useToast } from "@/hooks/use-toast"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 
@@ -266,9 +267,9 @@ export function ExpenseForm({ expense, onClose }: ExpenseFormProps) {
                 <SelectValue placeholder="Selecciona un usuario" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="1">Usuario 1</SelectItem>
-                <SelectItem value="2">Usuario 2</SelectItem>
-                <SelectItem value="3">Usuario 3</SelectItem>
+                <SelectItem value="1">{getUserName("1")}</SelectItem>
+                <SelectItem value="2">{getUserName("2")}</SelectItem>
+                <SelectItem value="3">{getUserName("3")}</SelectItem>
               </SelectContent>
             </Select>
             <div 

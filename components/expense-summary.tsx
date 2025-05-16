@@ -5,9 +5,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import { getExpenses } from "@/lib/actions"
-import { type Expense, getUserColor, getCategoryIcon, getCategoryLabel } from "@/lib/data"
+import { type Expense, getUserColor, getCategoryIcon, getCategoryLabel, getUserName } from "@/lib/data"
 import { formatCurrency, formatDate } from "@/lib/utils"
 import { RefreshCw, Eye } from "lucide-react"
+import { ExportExpenses } from "@/components/export-expenses"
 
 type UserID = "1" | "2" | "3"
 
@@ -119,16 +120,19 @@ export function ExpenseSummary() {
               <CardTitle>Gastos por Usuario</CardTitle>
               <CardDescription>Resumen de gastos por usuario y categoría</CardDescription>
             </div>
-            {error && (
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={loadExpenses} 
-                className="flex items-center gap-1"
-              >
-                <RefreshCw className="h-3 w-3" /> Reintentar
-              </Button>
-            )}
+            <div className="flex items-center gap-2">
+              {error && (
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={loadExpenses} 
+                  className="flex items-center gap-1"
+                >
+                  <RefreshCw className="h-3 w-3" /> Reintentar
+                </Button>
+              )}
+              <ExportExpenses expenses={expenses} />
+            </div>
           </div>
         </CardHeader>
         <CardContent>
@@ -150,7 +154,7 @@ export function ExpenseSummary() {
                     <Card key={userId}>
                       <CardHeader className={`${userColor} text-white p-4`}>
                         <div className="flex justify-between items-center">
-                          <CardTitle className="text-base sm:text-lg">Usuario {userId}</CardTitle>
+                          <CardTitle className="text-base sm:text-lg">{getUserName(userId)}</CardTitle>
                           <div className="text-xl sm:text-2xl font-bold">{formatCurrency(totalByUser[userId])}</div>
                         </div>
                       </CardHeader>
@@ -228,9 +232,9 @@ export function ExpenseSummary() {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-lg">
               <div className={`w-5 h-5 sm:w-6 sm:h-6 rounded-full ${selectedUserId ? getUserColor(selectedUserId) : ''} flex items-center justify-center`}>
-                <span className="text-2xs sm:text-xs text-white font-bold">U{selectedUserId}</span>
+                <span className="text-2xs sm:text-xs text-white font-bold">{selectedUserId ? getUserName(selectedUserId).charAt(0) : ''}</span>
               </div>
-              Gastos de Usuario {selectedUserId}
+              Gastos de {selectedUserId ? getUserName(selectedUserId) : ''}
             </DialogTitle>
             <DialogDescription>
               Listado detallado de todos los gastos registrados
