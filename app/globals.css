@@ -4,48 +4,63 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 240 10% 3.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
-    --primary: 340 82% 52%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 240 4.8% 95.9%;
-    --secondary-foreground: 240 5.9% 10%;
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
-    --accent: 240 4.8% 95.9%;
-    --accent-foreground: 240 5.9% 10%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
-    --ring: 340 82% 52%;
+    /* Colores principales de la paleta */
+    --background: 60 3% 92%;
+    --foreground: 196 75% 26%;
+    --card: 60 3% 92%;
+    --card-foreground: 196 75% 26%;
+    --popover: 60 3% 92%;
+    --popover-foreground: 196 75% 26%;
+    
+    --primary: 196 75% 26%;
+    --primary-foreground: 60 3% 92%;
+    
+    --secondary: 60 3% 92%;
+    --secondary-foreground: 196 75% 26%;
+    
+    --muted: 60 3% 85%;
+    --muted-foreground: 196 50% 40%;
+    
+    --accent: 180 51% 53%;
+    --accent-foreground: 60 3% 98%;
+    
+    --destructive: 352 83% 49%;
+    --destructive-foreground: 60 3% 98%;
+    
+    --border: 60 3% 80%;
+    --input: 60 3% 80%;
+    
+    --ring: 358 100% 67%;
     --radius: 0.75rem;
   }
 
   .dark {
-    --background: 240 10% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 240 10% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 240 10% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 340 82% 52%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 240 3.7% 15.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
-    --accent: 240 3.7% 15.9%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
-    --ring: 340 82% 52%;
+    --background: 196 75% 15%;
+    --foreground: 60 3% 92%;
+    --card: 196 75% 18%;
+    --card-foreground: 60 3% 92%;
+    --popover: 196 75% 18%;
+    --popover-foreground: 60 3% 92%;
+    
+    --primary: 180 51% 53%;
+    --primary-foreground: 196 75% 15%;
+    
+    --secondary: 196 75% 22%;
+    --secondary-foreground: 60 3% 92%;
+    
+    --muted: 196 50% 20%;
+    --muted-foreground: 60 3% 75%;
+    
+    --accent: 358 100% 67%;
+    --accent-foreground: 60 3% 98%;
+    
+    --destructive: 352 83% 49%;
+    --destructive-foreground: 60 3% 98%;
+    
+    --border: 196 50% 25%;
+    --input: 196 50% 25%;
+    
+    --ring: 180 51% 53%;
   }
 }
 
@@ -55,5 +70,130 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+  
+  /* Optimización para dispositivos táctiles */
+  @media (hover: none) {
+    button, a {
+      @apply active:scale-95 transition-transform;
+    }
+  }
+  
+  /* Texto más pequeño en móviles */
+  @media (max-width: 640px) {
+    html {
+      font-size: 14px;
+    }
+  }
+  
+  /* Texto más grande en pantallas muy grandes */
+  @media (min-width: 1440px) {
+    html {
+      font-size: 18px;
+    }
+  }
+}
+
+/* Definición de colores específicos */
+:root {
+  --valencia: 352 83% 49%;
+  --carnation: 358 100% 67%;
+  --gallery: 60 3% 92%;
+  --venice-blue: 196 75% 26%;
+  --fountain-blue: 180 51% 53%;
+}
+
+/* Optimizaciones para rendimiento */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: #ECECEA;
+  min-height: 100vh;
+  /* Soporte para notch en iPhones */
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+  /* Prevenir rebotes en iOS */
+  overflow-x: hidden;
+  width: 100%;
+  
+  /* Optimizaciones para rendimiento */
+  text-rendering: optimizeSpeed;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.1s;
+  will-change: auto;
+}
+
+/* Animaciones optimizadas para transiciones entre páginas */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Clase para elementos que aparecen en la página */
+.page-enter {
+  animation: fadeIn 0.2s ease forwards;
+}
+
+.content-enter {
+  animation: slideUp 0.3s ease forwards;
+}
+
+/* Optimizaciones para inputs y elementos interactivos */
+button, 
+[role="button"],
+a, 
+input, 
+select, 
+textarea {
+  touch-action: manipulation; /* Mejora rendimiento táctil */
+}
+
+/* Asegurar que los botones sean más grandes en pantallas táctiles para mejor accesibilidad */
+@media (pointer: coarse) {
+  button, 
+  .button, 
+  [role="button"],
+  a {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  input, 
+  select, 
+  textarea {
+    font-size: 16px !important; /* Prevenir zoom en inputs en iOS */
+  }
+}
+
+/* Clase auxiliar para texto muy pequeño en pantallas pequeñas */
+.text-2xs {
+  font-size: 0.7rem;
+  line-height: 1rem;
+}
+
+/* Mejorar la visualización en televisiones y pantallas grandes */
+@media (min-width: 1920px) {
+  .container {
+    max-width: 1600px;
   }
 }

@@ -58,13 +58,13 @@ export function ExpenseCard({ expense, onEdit, onDeleted }: ExpenseCardProps) {
 
   return (
     <Card className="overflow-hidden">
-      <CardContent className="p-4">
-        <div className="flex items-center justify-between">
+      <CardContent className="p-3 sm:p-4">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:justify-between">
           <div className="flex items-center gap-3">
             <div className={`flex items-center justify-center w-10 h-10 rounded-full ${userColor}`}>
               <span className="font-bold text-white">U{expense.user_id}</span>
             </div>
-            <div>
+            <div className="flex-grow">
               <div className="flex items-center gap-2">
                 <CategoryIcon className="h-4 w-4 text-muted-foreground" />
                 <span className="font-medium">{getCategoryLabel(expense.category)}</span>
@@ -73,7 +73,7 @@ export function ExpenseCard({ expense, onEdit, onDeleted }: ExpenseCardProps) {
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center justify-between sm:justify-end mt-2 sm:mt-0 gap-2">
             <div className="text-right mr-2">
               <div className="font-bold">{formatCurrency(expense.amount)}</div>
               {expense.receipt_url && (
@@ -84,44 +84,46 @@ export function ExpenseCard({ expense, onEdit, onDeleted }: ExpenseCardProps) {
               )}
             </div>
 
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8"
-              onClick={onEdit}
-            >
-              <Edit className="h-4 w-4" />
-            </Button>
+            <div className="flex items-center">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8"
+                onClick={onEdit}
+              >
+                <Edit className="h-4 w-4" />
+              </Button>
 
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 text-destructive hover:text-destructive"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    Esta acción no se puede deshacer. Se eliminará permanentemente este gasto.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                  <AlertDialogAction
-                    onClick={handleDelete}
-                    disabled={isDeleting}
-                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 text-destructive hover:text-destructive"
                   >
-                    {isDeleting ? "Eliminando..." : "Eliminar"}
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent className="max-w-[95vw] sm:max-w-md">
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Esta acción no se puede deshacer. Se eliminará permanentemente este gasto.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={handleDelete}
+                      disabled={isDeleting}
+                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                    >
+                      {isDeleting ? "Eliminando..." : "Eliminar"}
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </div>
           </div>
         </div>
       </CardContent>

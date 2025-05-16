@@ -150,3 +150,91 @@ export async function deleteExpense(id: string) {
     throw error
   }
 }
+
+// Función para verificar credenciales y crear una sesión
+export async function loginUser(username: string, password: string) {
+  try {
+    const supabase = createServerSupabaseClient()
+    
+    // Verificar si las credenciales son admin/admin
+    if (username !== "admin" || password !== "admin") {
+      return { error: "Credenciales inválidas" }
+    }
+    
+    // Buscar o crear el usuario en la base de datos
+    const { data: existingUser, error: queryError } = await supabase
+      .from("users")
+      .select("*")
+      .eq("username", username)
+      .single()
+      
+    if (queryError && queryError.code !== "PGRST116") { // PGRST116 es "no se encontraron resultados"
+      console.error("Error al buscar usuario:", queryError)
+      return { error: "Error al iniciar sesión" }
+    }
+    
+    if (!existingUser) {
+      // Crear el usuario admin si no existe
+      const { data: newUser, error: insertError } = await supabase
+        .from("users")
+        .insert({
+          username: "admin",
+          is_admin: true,
+          created_at: new Date().toISOString()
+        })
+        .select()
+        .single()
+        
+      if (insertError) {
+        console.error("Error al crear usuario:", insertError)
+        return { error: "Error al crear usuario" }
+      }
+    }
+    
+    // En una implementación real, generaríamos y firmaríamos un token JWT
+    // Para esta demo, configuraremos una cookie simple
+    
+    const response = new Response(JSON.stringify({ success: true }), {
+      headers: {
+        'content-type': 'application/json',
+      },
+    })
+    
+    // Establecer la cookie con una duración de 7 días
+    response.cookies.set('authenticated', 'true', { 
+      expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+      httpOnly: true,
+      path: '/' 
+    })
+    
+    return { success: true, message: "Inicio de sesión exitoso", response }
+  } catch (error) {
+    console.error("Error en loginUser:", error)
+    return { error: "Error al iniciar sesión" }
+  }
+}
+
+// Verificar si existe una sesión activa
+export async function checkSession() {
+  try {
+    const supabase = createServerSupabaseClient()
+    
+    // En una implementación real, aquí verificaríamos si el token JWT es válido
+    // Para esta demo, simplemente verificamos si el usuario admin existe
+    
+    const { data, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("username", "admin")
+      .single()
+      
+    if (error) {
+      return { authenticated: false }
+    }
+    
+    return { authenticated: true, user: data }
+  } catch (error) {
+    console.error("Error en checkSession:", error)
+    return { authenticated: false }
+  }
+}

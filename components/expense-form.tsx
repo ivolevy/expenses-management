@@ -7,11 +7,11 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { X, Upload, AlertCircle } from "lucide-react"
+import { X, Upload, AlertCircle, InfoIcon } from "lucide-react"
 import { addExpense, updateExpense } from "@/lib/actions"
 import type { ExpenseCategory } from "@/lib/data"
 import { useToast } from "@/hooks/use-toast"
-import { Alert, AlertDescription } from "@/components/ui/alert"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 
 interface ExpenseFormProps {
   expense?: {
@@ -38,8 +38,10 @@ export function ExpenseForm({ expense, onClose }: ExpenseFormProps) {
     category?: string
     userId?: string
     file?: string
+    general?: string
   }>({})
   const [formSubmitted, setFormSubmitted] = useState(false)
+  const [showErrors, setShowErrors] = useState(false)
 
   const { toast } = useToast()
 
@@ -105,11 +107,9 @@ export function ExpenseForm({ expense, onClose }: ExpenseFormProps) {
     setFormSubmitted(true)
 
     if (!validateForm()) {
-      toast({
-        title: "Error en el formulario",
-        description: "Por favor, completa todos los campos obligatorios",
-        variant: "destructive",
-      })
+      setShowErrors(true)
+      // Desaparecer el mensaje de error después de 5 segundos
+      setTimeout(() => setShowErrors(false), 5000)
       return
     }
 
@@ -142,11 +142,12 @@ export function ExpenseForm({ expense, onClose }: ExpenseFormProps) {
       onClose()
     } catch (error) {
       console.error("Error al guardar el gasto:", error)
-      toast({
-        title: "Error",
-        description: "Ocurrió un error al guardar el gasto",
-        variant: "destructive",
+      setErrors({
+        ...errors,
+        general: "Ocurrió un error al guardar el gasto"
       })
+      setShowErrors(true)
+      setTimeout(() => setShowErrors(false), 5000)
     } finally {
       setIsSubmitting(false)
     }
@@ -164,12 +165,19 @@ export function ExpenseForm({ expense, onClose }: ExpenseFormProps) {
       </CardHeader>
       <form onSubmit={handleSubmit}>
         <CardContent className="space-y-4">
-          {formSubmitted && Object.keys(errors).length > 0 && (
-            <Alert variant="destructive">
+          <div 
+            className={`transition-all duration-300 ease-in-out transform origin-top ${formSubmitted && showErrors && Object.keys(errors).length > 0 
+              ? 'opacity-100 max-h-48 scale-y-100 mb-4' 
+              : 'opacity-0 max-h-0 scale-y-95 overflow-hidden'}`}
+          >
+            <Alert variant="info" className="shadow-sm">
               <AlertCircle className="h-4 w-4" />
-              <AlertDescription>Por favor, completa todos los campos obligatorios</AlertDescription>
+              <AlertTitle>Por favor, revisa el formulario</AlertTitle>
+              <AlertDescription className="mt-2">
+                {errors.general || "Completa todos los campos obligatorios para continuar."}
+              </AlertDescription>
             </Alert>
-          )}
+          </div>
 
           <div className="space-y-2">
             <Label htmlFor="amount" className="flex items-center">
@@ -183,7 +191,7 @@ export function ExpenseForm({ expense, onClose }: ExpenseFormProps) {
                 step="0.01"
                 min="0"
                 placeholder="0.00"
-                className={`pl-8 ${formSubmitted && errors.amount ? "border-red-500" : ""}`}
+                className={`pl-8 transition-colors duration-200 ${formSubmitted && errors.amount ? "border-red-300 bg-red-50/50 dark:bg-red-950/20" : ""}`}
                 value={amount}
                 onChange={(e) => {
                   setAmount(e.target.value)
@@ -191,7 +199,17 @@ export function ExpenseForm({ expense, onClose }: ExpenseFormProps) {
                 required
               />
             </div>
-            {formSubmitted && errors.amount && <p className="text-sm text-red-500">{errors.amount}</p>}
+            <div 
+              className={`transition-all duration-200 ease-in-out ${
+                formSubmitted && errors.amount 
+                  ? 'opacity-100 max-h-10' 
+                  : 'opacity-0 max-h-0 overflow-hidden'
+              }`}
+            >
+              <p className="text-xs text-red-500 mt-1 flex items-center">
+                <InfoIcon className="h-3 w-3 mr-1" /> {errors.amount}
+              </p>
+            </div>
           </div>
 
           <div className="space-y-2">
@@ -204,7 +222,10 @@ export function ExpenseForm({ expense, onClose }: ExpenseFormProps) {
                 setCategory(value)
               }}
             >
-              <SelectTrigger id="category" className={formSubmitted && errors.category ? "border-red-500" : ""}>
+              <SelectTrigger 
+                id="category" 
+                className={`transition-colors duration-200 ${formSubmitted && errors.category ? "border-red-300 bg-red-50/50 dark:bg-red-950/20" : ""}`}
+              >
                 <SelectValue placeholder="Selecciona una categoría" />
               </SelectTrigger>
               <SelectContent>
@@ -215,7 +236,17 @@ export function ExpenseForm({ expense, onClose }: ExpenseFormProps) {
                 <SelectItem value="OTROS">Otros</SelectItem>
               </SelectContent>
             </Select>
-            {formSubmitted && errors.category && <p className="text-sm text-red-500">{errors.category}</p>}
+            <div 
+              className={`transition-all duration-200 ease-in-out ${
+                formSubmitted && errors.category 
+                  ? 'opacity-100 max-h-10' 
+                  : 'opacity-0 max-h-0 overflow-hidden'
+              }`}
+            >
+              <p className="text-xs text-red-500 mt-1 flex items-center">
+                <InfoIcon className="h-3 w-3 mr-1" /> {errors.category}
+              </p>
+            </div>
           </div>
 
           <div className="space-y-2">
@@ -228,7 +259,10 @@ export function ExpenseForm({ expense, onClose }: ExpenseFormProps) {
                 setUserId(value)
               }}
             >
-              <SelectTrigger id="user" className={formSubmitted && errors.userId ? "border-red-500" : ""}>
+              <SelectTrigger 
+                id="user" 
+                className={`transition-colors duration-200 ${formSubmitted && errors.userId ? "border-red-300 bg-red-50/50 dark:bg-red-950/20" : ""}`}
+              >
                 <SelectValue placeholder="Selecciona un usuario" />
               </SelectTrigger>
               <SelectContent>
@@ -237,7 +271,17 @@ export function ExpenseForm({ expense, onClose }: ExpenseFormProps) {
                 <SelectItem value="3">Usuario 3</SelectItem>
               </SelectContent>
             </Select>
-            {formSubmitted && errors.userId && <p className="text-sm text-red-500">{errors.userId}</p>}
+            <div 
+              className={`transition-all duration-200 ease-in-out ${
+                formSubmitted && errors.userId 
+                  ? 'opacity-100 max-h-10' 
+                  : 'opacity-0 max-h-0 overflow-hidden'
+              }`}
+            >
+              <p className="text-xs text-red-500 mt-1 flex items-center">
+                <InfoIcon className="h-3 w-3 mr-1" /> {errors.userId}
+              </p>
+            </div>
           </div>
 
           <div className="space-y-2">
@@ -250,7 +294,7 @@ export function ExpenseForm({ expense, onClose }: ExpenseFormProps) {
                   type="button"
                   variant="outline"
                   onClick={() => document.getElementById("receipt")?.click()}
-                  className={`w-full ${formSubmitted && errors.file ? "border-red-500" : ""}`}
+                  className={`w-full transition-colors duration-200 ${formSubmitted && errors.file ? "border-red-300 bg-red-50/50 dark:bg-red-950/20" : ""}`}
                 >
                   <Upload className="mr-2 h-4 w-4" />
                   Subir comprobante
@@ -263,7 +307,17 @@ export function ExpenseForm({ expense, onClose }: ExpenseFormProps) {
                   onChange={handleFileChange}
                 />
               </div>
-              {formSubmitted && errors.file && <p className="text-sm text-red-500">{errors.file}</p>}
+              <div 
+                className={`transition-all duration-200 ease-in-out ${
+                  formSubmitted && errors.file 
+                    ? 'opacity-100 max-h-10' 
+                    : 'opacity-0 max-h-0 overflow-hidden'
+                }`}
+              >
+                <p className="text-xs text-red-500 mt-1 flex items-center">
+                  <InfoIcon className="h-3 w-3 mr-1" /> {errors.file}
+                </p>
+              </div>
 
               {preview && preview.startsWith("data:image") && (
                 <div className="relative mt-2 rounded-md overflow-hidden border">

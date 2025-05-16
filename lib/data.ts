@@ -49,12 +49,12 @@ export function getCategoryLabel(category: string): string {
 export function getUserColor(userId: string): string {
   switch (userId) {
     case "1":
-      return "bg-pink-600"
+      return "bg-blue-600" // Azul principal
     case "2":
-      return "bg-purple-600"
+      return "bg-indigo-600" // Índigo
     case "3":
-      return "bg-cyan-600"
+      return "bg-violet-600" // Violeta
     default:
-      return "bg-gray-600"
+      return "bg-purple-600" // Púrpura
   }
 }

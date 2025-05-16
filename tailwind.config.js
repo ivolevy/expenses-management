@@ -18,6 +18,12 @@ module.exports = {
     },
     extend: {
       colors: {
+        valencia: "#E41534",
+        carnation: "#FF555A",
+        gallery: "#ECECEA",
+        veniceBlue: "#0B5779",
+        fountainBlue: "#4DBDBE",
+        
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

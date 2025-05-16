@@ -16,14 +16,26 @@ export function ExpenseList({ onEditExpense }: ExpenseListProps) {
   const [expenses, setExpenses] = useState<Expense[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState("")
+  const [error, setError] = useState<string | null>(null)
 
   const loadExpenses = async () => {
     try {
       setLoading(true)
+      setError(null)
       const data = await getExpenses()
-      setExpenses(data)
+      
+      // Verificar que data sea un array
+      if (Array.isArray(data)) {
+        setExpenses(data)
+      } else {
+        console.error("Error: los gastos recibidos no son un array", data)
+        setExpenses([])
+        setError("Error al cargar los gastos. No se recibió un formato válido.")
+      }
     } catch (error) {
       console.error("Error al cargar los gastos:", error)
+      setExpenses([])
+      setError("Error al cargar los gastos. Por favor, intenta nuevamente.")
     } finally {
       setLoading(false)
     }
@@ -33,6 +45,7 @@ export function ExpenseList({ onEditExpense }: ExpenseListProps) {
     loadExpenses()
   }, [])
 
+  // Efecto para recargar periódicamente, usando un intervalo
   useEffect(() => {
     const interval = setInterval(() => {
       loadExpenses()
@@ -41,16 +54,28 @@ export function ExpenseList({ onEditExpense }: ExpenseListProps) {
     return () => clearInterval(interval)
   }, [])
 
-  const filteredExpenses = expenses.filter((expense) => {
-    const categoryMatch = expense.category.toLowerCase().includes(searchTerm.toLowerCase())
-    const userMatch = `Usuario ${expense.user_id}`.toLowerCase().includes(searchTerm.toLowerCase())
-    const amountMatch = expense.amount.toString().includes(searchTerm)
+  // Asegurarnos de que expenses sea un array antes de aplicar filter
+  const filteredExpenses = Array.isArray(expenses) ? expenses.filter((expense) => {
+    if (!expense) return false; // Validación adicional para cada elemento
+    
+    try {
+      const categoryMatch = expense.category.toLowerCase().includes(searchTerm.toLowerCase())
+      const userMatch = `Usuario ${expense.user_id}`.toLowerCase().includes(searchTerm.toLowerCase())
+      const amountMatch = expense.amount.toString().includes(searchTerm)
 
-    return categoryMatch || userMatch || amountMatch
-  })
+      return categoryMatch || userMatch || amountMatch
+    } catch (e) {
+      console.error("Error al filtrar gasto:", e, expense)
+      return false;
+    }
+  }) : [];
 
   const handleExpenseDeleted = (id: string) => {
-    setExpenses(expenses.filter((expense) => expense.id !== id))
+    setExpenses(prevExpenses => 
+      Array.isArray(prevExpenses) 
+        ? prevExpenses.filter((expense) => expense && expense.id !== id)
+        : []
+    )
   }
 
   return (
@@ -59,7 +84,9 @@ export function ExpenseList({ onEditExpense }: ExpenseListProps) {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <CardTitle>Todos los Gastos</CardTitle>
-            <CardDescription>{expenses.length} gastos registrados</CardDescription>
+            <CardDescription>
+              {Array.isArray(expenses) ? `${expenses.length} gastos registrados` : "Cargando gastos..."}
+            </CardDescription>
           </div>
           <div className="relative w-full md:w-64">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -76,6 +103,16 @@ export function ExpenseList({ onEditExpense }: ExpenseListProps) {
         {loading ? (
           <div className="flex justify-center p-8">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          </div>
+        ) : error ? (
+          <div className="text-center p-8 text-destructive">
+            {error}
+            <button 
+              onClick={loadExpenses} 
+              className="block mx-auto mt-4 text-primary hover:underline"
+            >
+              Reintentar
+            </button>
           </div>
         ) : filteredExpenses.length > 0 ? (
           <div className="space-y-4">
