@@ -39,16 +39,16 @@ export function ExpenseForm({ expense, onClose }: ExpenseFormProps) {
     userId?: string
     file?: string
   }>({})
-  const [formTouched, setFormTouched] = useState(false)
+  const [formSubmitted, setFormSubmitted] = useState(false)
 
   const { toast } = useToast()
 
-  // Validar el formulario cuando cambian los valores
+  // Validar el formulario cuando cambian los valores, pero solo si ya se intentó enviar
   useEffect(() => {
-    if (formTouched) {
+    if (formSubmitted) {
       validateForm()
     }
-  }, [amount, category, userId, file, preview, formTouched])
+  }, [amount, category, userId, file, preview, formSubmitted])
 
   const validateForm = () => {
     const newErrors: {
@@ -98,12 +98,11 @@ export function ExpenseForm({ expense, onClose }: ExpenseFormProps) {
         setPreview(null)
       }
     }
-    setFormTouched(true)
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setFormTouched(true)
+    setFormSubmitted(true)
 
     if (!validateForm()) {
       toast({
@@ -165,7 +164,7 @@ export function ExpenseForm({ expense, onClose }: ExpenseFormProps) {
       </CardHeader>
       <form onSubmit={handleSubmit}>
         <CardContent className="space-y-4">
-          {formTouched && Object.keys(errors).length > 0 && (
+          {formSubmitted && Object.keys(errors).length > 0 && (
             <Alert variant="destructive">
               <AlertCircle className="h-4 w-4" />
               <AlertDescription>Por favor, completa todos los campos obligatorios</AlertDescription>
@@ -184,16 +183,15 @@ export function ExpenseForm({ expense, onClose }: ExpenseFormProps) {
                 step="0.01"
                 min="0"
                 placeholder="0.00"
-                className={`pl-8 ${errors.amount ? "border-red-500" : ""}`}
+                className={`pl-8 ${formSubmitted && errors.amount ? "border-red-500" : ""}`}
                 value={amount}
                 onChange={(e) => {
                   setAmount(e.target.value)
-                  setFormTouched(true)
                 }}
                 required
               />
             </div>
-            {errors.amount && <p className="text-sm text-red-500">{errors.amount}</p>}
+            {formSubmitted && errors.amount && <p className="text-sm text-red-500">{errors.amount}</p>}
           </div>
 
           <div className="space-y-2">
@@ -204,10 +202,9 @@ export function ExpenseForm({ expense, onClose }: ExpenseFormProps) {
               value={category}
               onValueChange={(value: ExpenseCategory) => {
                 setCategory(value)
-                setFormTouched(true)
               }}
             >
-              <SelectTrigger id="category" className={errors.category ? "border-red-500" : ""}>
+              <SelectTrigger id="category" className={formSubmitted && errors.category ? "border-red-500" : ""}>
                 <SelectValue placeholder="Selecciona una categoría" />
               </SelectTrigger>
               <SelectContent>
@@ -218,7 +215,7 @@ export function ExpenseForm({ expense, onClose }: ExpenseFormProps) {
                 <SelectItem value="OTROS">Otros</SelectItem>
               </SelectContent>
             </Select>
-            {errors.category && <p className="text-sm text-red-500">{errors.category}</p>}
+            {formSubmitted && errors.category && <p className="text-sm text-red-500">{errors.category}</p>}
           </div>
 
           <div className="space-y-2">
@@ -229,10 +226,9 @@ export function ExpenseForm({ expense, onClose }: ExpenseFormProps) {
               value={userId}
               onValueChange={(value) => {
                 setUserId(value)
-                setFormTouched(true)
               }}
             >
-              <SelectTrigger id="user" className={errors.userId ? "border-red-500" : ""}>
+              <SelectTrigger id="user" className={formSubmitted && errors.userId ? "border-red-500" : ""}>
                 <SelectValue placeholder="Selecciona un usuario" />
               </SelectTrigger>
               <SelectContent>
@@ -241,7 +237,7 @@ export function ExpenseForm({ expense, onClose }: ExpenseFormProps) {
                 <SelectItem value="3">Usuario 3</SelectItem>
               </SelectContent>
             </Select>
-            {errors.userId && <p className="text-sm text-red-500">{errors.userId}</p>}
+            {formSubmitted && errors.userId && <p className="text-sm text-red-500">{errors.userId}</p>}
           </div>
 
           <div className="space-y-2">
@@ -254,7 +250,7 @@ export function ExpenseForm({ expense, onClose }: ExpenseFormProps) {
                   type="button"
                   variant="outline"
                   onClick={() => document.getElementById("receipt")?.click()}
-                  className={`w-full ${errors.file ? "border-red-500" : ""}`}
+                  className={`w-full ${formSubmitted && errors.file ? "border-red-500" : ""}`}
                 >
                   <Upload className="mr-2 h-4 w-4" />
                   Subir comprobante
@@ -267,7 +263,7 @@ export function ExpenseForm({ expense, onClose }: ExpenseFormProps) {
                   onChange={handleFileChange}
                 />
               </div>
-              {errors.file && <p className="text-sm text-red-500">{errors.file}</p>}
+              {formSubmitted && errors.file && <p className="text-sm text-red-500">{errors.file}</p>}
 
               {preview && preview.startsWith("data:image") && (
                 <div className="relative mt-2 rounded-md overflow-hidden border">
@@ -284,7 +280,6 @@ export function ExpenseForm({ expense, onClose }: ExpenseFormProps) {
                     onClick={() => {
                       setFile(null)
                       setPreview(null)
-                      setFormTouched(true)
                     }}
                   >
                     <X className="h-4 w-4" />
@@ -302,7 +297,6 @@ export function ExpenseForm({ expense, onClose }: ExpenseFormProps) {
                     className="h-6 w-6"
                     onClick={() => {
                       setFile(null)
-                      setFormTouched(true)
                     }}
                   >
                     <X className="h-4 w-4" />
@@ -320,7 +314,6 @@ export function ExpenseForm({ expense, onClose }: ExpenseFormProps) {
                     className="h-6 w-6"
                     onClick={() => {
                       setPreview(null)
-                      setFormTouched(true)
                     }}
                   >
                     <X className="h-4 w-4" />
@@ -334,7 +327,7 @@ export function ExpenseForm({ expense, onClose }: ExpenseFormProps) {
           <Button type="button" variant="outline" onClick={onClose}>
             Cancelar
           </Button>
-          <Button type="submit" disabled={isSubmitting || (formTouched && !isFormValid)}>
+          <Button type="submit" disabled={isSubmitting}>
             {isSubmitting ? "Guardando..." : expense ? "Actualizar" : "Guardar"}
           </Button>
         </CardFooter>
