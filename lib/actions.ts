@@ -40,9 +40,22 @@ export async function addExpense({
 
     let receiptUrl = null
     if (file) {
-      // En una aplicación real, aquí subiríamos el archivo a Supabase Storage
-      // Por ahora, simulamos una URL
-      receiptUrl = `receipt-${Date.now()}-${file.name}`
+      // Cargar el archivo utilizando la API
+      const formData = new FormData()
+      formData.append("file", file)
+      
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      })
+      
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || "Error al subir el archivo")
+      }
+      
+      const { url } = await response.json()
+      receiptUrl = url
     }
 
     const { data, error } = await supabase
@@ -99,9 +112,22 @@ export async function updateExpense({
 
     let receiptUrl = existingExpense?.receipt_url || null
     if (file) {
-      // En una aplicación real, aquí subiríamos el archivo a Supabase Storage
-      // y eliminaríamos el archivo anterior si existe
-      receiptUrl = `receipt-${Date.now()}-${file.name}`
+      // Cargar el archivo utilizando la API
+      const formData = new FormData()
+      formData.append("file", file)
+      
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      })
+      
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || "Error al subir el archivo")
+      }
+      
+      const { url } = await response.json()
+      receiptUrl = url
     }
 
     const { data, error } = await supabase
@@ -192,22 +218,8 @@ export async function loginUser(username: string, password: string) {
     }
     
     // En una implementación real, generaríamos y firmaríamos un token JWT
-    // Para esta demo, configuraremos una cookie simple
-    
-    const response = new Response(JSON.stringify({ success: true }), {
-      headers: {
-        'content-type': 'application/json',
-      },
-    })
-    
-    // Establecer la cookie con una duración de 7 días
-    response.cookies.set('authenticated', 'true', { 
-      expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-      httpOnly: true,
-      path: '/' 
-    })
-    
-    return { success: true, message: "Inicio de sesión exitoso", response }
+    // Para esta demo, simplemente devolvemos éxito y la cookie se maneja en el cliente
+    return { success: true, message: "Inicio de sesión exitoso" }
   } catch (error) {
     console.error("Error en loginUser:", error)
     return { error: "Error al iniciar sesión" }

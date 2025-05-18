@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { X, Upload, AlertCircle, InfoIcon } from "lucide-react"
-import { addExpense, updateExpense } from "@/lib/actions"
+import { addExpenseWithFile, updateExpenseWithFile } from "@/lib/clientActions"
 import type { ExpenseCategory } from "@/lib/data"
 import { getUserName } from "@/lib/data"
 import { useToast } from "@/hooks/use-toast"
@@ -118,15 +118,16 @@ export function ExpenseForm({ expense, onClose }: ExpenseFormProps) {
 
     try {
       if (expense) {
-        await updateExpense({
+        await updateExpenseWithFile({
           id: expense.id,
           amount: Number.parseFloat(amount),
           category: category as ExpenseCategory,
           userId,
           file,
+          currentReceiptUrl: expense.receipt_url || null,
         })
       } else {
-        await addExpense({
+        await addExpenseWithFile({
           amount: Number.parseFloat(amount),
           category: category as ExpenseCategory,
           userId,
