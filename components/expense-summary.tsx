@@ -42,16 +42,9 @@ export function ExpenseSummary() {
     }
   }
 
-  // Actualizar la función para cargar los gastos y refrescar periódicamente
+  // Actualizar la función para cargar los gastos
   useEffect(() => {
     loadExpenses()
-
-    // Configurar un intervalo para actualizar los datos cada 5 segundos
-    const interval = setInterval(() => {
-      loadExpenses()
-    }, 5000)
-
-    return () => clearInterval(interval)
   }, [])
 
   // Agrupar gastos por usuario de forma segura
