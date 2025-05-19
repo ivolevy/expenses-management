@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { X, FileText, Download, ExternalLink, ImageIcon } from "lucide-react"
 import type { ExpenseCategory } from "@/lib/data"
 import { getUserName, getCategoryIcon } from "@/lib/data"
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogTrigger, DialogTitle } from "@/components/ui/dialog"
 import Image from "next/image"
 
 interface ExpenseDetailProps {
@@ -120,6 +120,7 @@ export function ExpenseDetail({ expense, onClose }: ExpenseDetailProps) {
                       </div>
                     </DialogTrigger>
                     <DialogContent className="max-w-3xl" hideCloseButton>
+                      <span className="sr-only"><DialogTitle>Comprobante</DialogTitle></span>
                       <div className="relative h-[70vh]">
                         <Image
                           src={expense.receipt_url}

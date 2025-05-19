@@ -3,24 +3,31 @@ import type { NextRequest } from 'next/server'
 
 // Este middleware se ejecuta antes de que se cargue la página
 export function middleware(request: NextRequest) {
-  // Verificar si es una ruta pública (no requiere autenticación)
-  if (isPublicRoute(request.nextUrl.pathname)) {
+  try {
+    const { pathname } = request.nextUrl
+
+    // Verificar si es una ruta pública
+    if (isPublicRoute(pathname)) {
+      return NextResponse.next()
+    }
+
+    // Verificar autenticación
+    const isAuthenticated = request.cookies.has('authenticated')
+
+    if (!isAuthenticated) {
+      // Redirigir a login si no está autenticado
+      const url = new URL('/login', request.url)
+      url.searchParams.set('from', pathname)
+      return NextResponse.redirect(url)
+    }
+
+    // Continuar con la solicitud si está autenticado
     return NextResponse.next()
+  } catch (error) {
+    console.error('Error en middleware:', error)
+    // En caso de error, redirigir a login
+    return NextResponse.redirect(new URL('/login', request.url))
   }
-  
-  // En una aplicación real, aquí verificaríamos el token JWT
-  // Para esta demo, solo verificamos que exista la cookie de autenticación
-  const authCookie = request.cookies.get('authenticated')
-  const isAuthenticated = authCookie?.value === 'true'
-
-  // Si no está autenticado, redirigir al login
-  if (!isAuthenticated) {
-    const loginUrl = new URL('/login', request.url)
-    // Usar 307 (Temporary Redirect) en lugar del 302 por defecto para mejor rendimiento
-    return NextResponse.redirect(loginUrl, { status: 307 })
-  }
-
-  return NextResponse.next()
 }
 
 // Función auxiliar para verificar rutas públicas (para mejorar rendimiento)
@@ -44,7 +51,15 @@ function isPublicRoute(pathname: string): boolean {
   return publicRoutes.includes(pathname)
 }
 
-// Configurar las rutas donde se debe ejecutar el middleware (todas excepto api)
+// Configurar las rutas que deben pasar por el middleware
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
+  matcher: [
+    /*
+     * Match all request paths except for the ones starting with:
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     */
+    '/((?!_next/static|_next/image|favicon.ico).*)',
+  ],
 } 

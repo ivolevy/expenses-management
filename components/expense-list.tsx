@@ -9,7 +9,7 @@ import { getUserName } from "@/lib/data"
 import { Input } from "@/components/ui/input"
 import { Search } from "lucide-react"
 import { ExportExpenses } from "@/components/export-expenses"
-import { Dialog, DialogContent } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 import { ExpenseDetail } from "@/components/expense-detail"
 
 interface ExpenseListProps {
@@ -155,6 +155,7 @@ export function ExpenseList({ onEditExpense }: ExpenseListProps) {
 
       <Dialog open={!!selectedExpense} onOpenChange={(open) => !open && setSelectedExpense(null)}>
         <DialogContent className="max-w-3xl p-0 overflow-hidden bg-transparent border-none shadow-none" hideCloseButton>
+          <span className="sr-only"><DialogTitle>Detalle del gasto</DialogTitle></span>
           {selectedExpense && (
             <ExpenseDetail 
               expense={selectedExpense} 

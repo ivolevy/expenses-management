@@ -138,17 +138,25 @@ export function ExpenseForm({ expense, onClose }: ExpenseFormProps) {
       toast({
         title: expense ? "Gasto actualizado" : "Gasto añadido",
         description: expense ? "El gasto se ha actualizado correctamente" : "El gasto se ha añadido correctamente",
-        variant: "default",
+        variant: "success",
       })
 
       onClose()
     } catch (error) {
       console.error("Error al guardar el gasto:", error)
+      const errorMessage = error instanceof Error ? error.message : "Ocurrió un error al guardar el gasto"
       setErrors({
         ...errors,
-        general: "Ocurrió un error al guardar el gasto"
+        general: errorMessage
       })
       setShowErrors(true)
+      
+      toast({
+        title: "Error",
+        description: errorMessage,
+        variant: "destructive",
+      })
+      
       setTimeout(() => setShowErrors(false), 5000)
     } finally {
       setIsSubmitting(false)

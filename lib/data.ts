@@ -49,13 +49,13 @@ export function getCategoryLabel(category: string): string {
 export function getUserColor(userId: string): string {
   switch (userId) {
     case "1":
-      return "bg-emerald-600" // Verde esmeralda
+      return "bg-emerald-700" // Verde esmeralda más oscuro
     case "2":
-      return "bg-amber-600" // Ámbar
+      return "bg-amber-700" // Ámbar más oscuro
     case "3":
-      return "bg-rose-600" // Rosa
+      return "bg-rose-700" // Rosa más oscuro
     default:
-      return "bg-purple-600" // Púrpura
+      return "bg-purple-700" // Púrpura más oscuro
   }
 }
 

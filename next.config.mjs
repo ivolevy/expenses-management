@@ -18,6 +18,15 @@ const nextConfig = {
       },
     ],
   },
+  // Optimizaciones de rendimiento
+  poweredByHeader: false,
+  compress: true,
+  reactStrictMode: true,
+  // Configuración de caché
+  onDemandEntries: {
+    maxInactiveAge: 60 * 60 * 1000,
+    pagesBufferLength: 5,
+  },
 }
 
 export default nextConfig

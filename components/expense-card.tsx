@@ -23,6 +23,7 @@ import { useToast } from "@/hooks/use-toast"
 import {
   Dialog,
   DialogContent,
+  DialogTitle,
 } from "@/components/ui/dialog"
 import { ExpenseDetail } from "@/components/expense-detail"
 
@@ -166,6 +167,7 @@ export function ExpenseCard({ expense, onEdit, onDeleted, onViewDetail }: Expens
       
       <Dialog open={isDetailOpen} onOpenChange={setIsDetailOpen}>
         <DialogContent className="max-w-3xl p-0 overflow-hidden bg-transparent border-none shadow-none" hideCloseButton>
+          <span className="sr-only"><DialogTitle>Detalle del gasto</DialogTitle></span>
           <ExpenseDetail 
             expense={expense} 
             onClose={() => setIsDetailOpen(false)}

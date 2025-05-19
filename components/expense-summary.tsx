@@ -144,29 +144,26 @@ export function ExpenseSummary() {
                   const userColor = getUserColor(userId)
 
                   return (
-                    <Card key={userId}>
-                      <CardHeader className={`${userColor} text-white p-4`}>
+                    <Card key={userId} className="border border-neutral-200 shadow-sm rounded-xl bg-white">
+                      <CardHeader className="bg-white text-[#134e4a] p-4 rounded-t-xl">
                         <div className="flex justify-between items-center">
-                          <CardTitle className="text-base sm:text-lg">{getUserName(userId)}</CardTitle>
-                          <div className="text-xl sm:text-2xl font-bold">{formatCurrency(totalByUser[userId])}</div>
+                          <CardTitle className="text-base sm:text-lg text-[#134e4a]">{getUserName(userId)}</CardTitle>
+                          <div className="text-xl sm:text-2xl font-bold text-[#0f172a]">{formatCurrency(totalByUser[userId])}</div>
                         </div>
                       </CardHeader>
-                      <CardContent className="pt-4 pb-4">
-                        <div className="space-y-2">
-                          <div className="text-xs sm:text-sm text-muted-foreground">
-                            {Array.isArray(expensesByUser[userId]) ? `${expensesByUser[userId].length} gastos registrados` : "0 gastos registrados"}
-                          </div>
-                          
-                          <Button 
-                            variant="outline" 
-                            size="sm" 
-                            className="w-full mt-2"
-                            onClick={() => openUserDetailsModal(userId)}
-                            disabled={!Array.isArray(expensesByUser[userId]) || expensesByUser[userId].length === 0}
-                          >
-                            Ver detalle
-                          </Button>
+                      <CardContent className="bg-gray-50 rounded-b-xl">
+                        <div className="text-xs sm:text-sm text-muted-foreground">
+                          {Array.isArray(expensesByUser[userId]) ? `${expensesByUser[userId].length} gastos registrados` : "0 gastos registrados"}
                         </div>
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="w-full mt-2"
+                          onClick={() => openUserDetailsModal(userId)}
+                          disabled={!Array.isArray(expensesByUser[userId]) || expensesByUser[userId].length === 0}
+                        >
+                          Ver detalle
+                        </Button>
                       </CardContent>
                     </Card>
                   )
@@ -174,11 +171,11 @@ export function ExpenseSummary() {
               </div>
 
               {totalExpenses > 0 && (
-                <Card>
-                  <CardHeader className="pb-3">
+                <Card className="border border-neutral-200 shadow-sm rounded-xl bg-white">
+                  <CardHeader className="pb-3 rounded-t-xl">
                     <CardTitle className="text-lg sm:text-xl">Resumen General</CardTitle>
                   </CardHeader>
-                  <CardContent>
+                  <CardContent className="rounded-b-xl">
                     <div className="space-y-4">
                       <div className="flex justify-between items-center">
                         <span className="font-medium text-sm sm:text-base">Total de gastos:</span>
@@ -195,7 +192,7 @@ export function ExpenseSummary() {
                             const percentage = totalExpenses > 0 ? Math.round((amount / totalExpenses) * 100) : 0
 
                             return (
-                              <div key={category} className="flex justify-between items-center p-2 border rounded-md">
+                              <div key={category} className="flex justify-between items-center p-2 border rounded-md bg-gray-50">
                                 <div className="flex items-center gap-2">
                                   <div className={`p-1.5 sm:p-2 rounded-full bg-secondary`}>
                                     <CategoryIcon className="h-3 w-3 sm:h-4 sm:w-4" />
