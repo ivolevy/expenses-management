@@ -83,14 +83,14 @@ export function ExpenseDetail({ expense, onClose }: ExpenseDetailProps) {
             </div>
             
             <div>
-              <h3 className="text-sm font-medium text-muted-foreground">Fecha</h3>
-              <p className="font-medium mt-1">{formattedDate}</p>
+              <h3 className="text-sm font-medium text-muted-foreground">Fecha de creación</h3>
+              <p className="font-medium mt-1 text-primary">{formattedDate}</p>
             </div>
             
             {formattedUpdateDate && (
               <div>
                 <h3 className="text-sm font-medium text-muted-foreground">Última actualización</h3>
-                <p className="font-medium mt-1">{formattedUpdateDate}</p>
+                <p className="font-medium mt-1 text-muted-foreground">{formattedUpdateDate}</p>
               </div>
             )}
           </div>
