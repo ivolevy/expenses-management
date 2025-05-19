@@ -160,8 +160,36 @@ export async function deleteExpense(id: string) {
   try {
     const supabase = createServerSupabaseClient()
 
-    // En una aplicación real, aquí también eliminaríamos el archivo de Supabase Storage si existe
+    // Primero obtenemos el gasto para obtener la URL del recibo
+    const { data: expense, error: fetchError } = await supabase
+      .from("expenses")
+      .select("receipt_url")
+      .eq("id", id)
+      .single()
 
+    if (fetchError) {
+      console.error("Error al obtener el gasto:", fetchError)
+      throw new Error("Error al obtener el gasto")
+    }
+
+    // Si existe un recibo, lo eliminamos de Storage
+    if (expense?.receipt_url) {
+      // Extraer el nombre del archivo de la URL
+      const urlParts = expense.receipt_url.split('/')
+      const fileName = urlParts[urlParts.length - 1]
+      const filePath = `receipts/${fileName}`
+
+      const { error: deleteFileError } = await supabase.storage
+        .from("expenses")
+        .remove([filePath])
+
+      if (deleteFileError) {
+        console.error("Error al eliminar el archivo:", deleteFileError)
+        // No lanzamos error aquí para permitir que continúe con la eliminación del gasto
+      }
+    }
+
+    // Eliminamos el gasto de la base de datos
     const { error } = await supabase.from("expenses").delete().eq("id", id)
 
     if (error) {
